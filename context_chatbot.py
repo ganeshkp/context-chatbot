@@ -58,7 +58,7 @@ if uploaded_file is not None:
     embeddings=HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     
     #Store embeddings in vector DB
-    vectorstore=Chroma.from_documents(documents,embeddings)
+    vectorstore=Chroma.from_documents(documents, embeddings, persist_directory=None)
 
     #Create a retriever    
     retriever=RunnableLambda(vectorstore.similarity_search).bind(k=1)
