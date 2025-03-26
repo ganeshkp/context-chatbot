@@ -3,7 +3,8 @@ from langchain_core.runnables import RunnableLambda
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
+# from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores import FAISS
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
@@ -58,7 +59,7 @@ if uploaded_file is not None:
     embeddings=HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     
     #Store embeddings in vector DB
-    vectorstore=Chroma.from_documents(documents, embeddings, persist_directory=None)
+    vectorstore=FAISS.from_documents(documents, embeddings)
 
     #Create a retriever    
     retriever=RunnableLambda(vectorstore.similarity_search).bind(k=1)
