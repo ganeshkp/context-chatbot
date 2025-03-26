@@ -5,4 +5,4 @@ langchain_groq
 langchain_huggingface
 langchain_chroma
 chromadb
-faiss-gpu==1.7.4
+faiss-cpu
