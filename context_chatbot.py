@@ -69,6 +69,7 @@ if uploaded_file is not None:
     
     message = """
         Answer the questions based on the provided context only.
+        dont answer if questions are out of context
         Please provide the most accurate response based on the question
         But dont mention about context
 
