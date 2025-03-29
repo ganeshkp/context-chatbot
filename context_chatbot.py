@@ -24,22 +24,20 @@ def clean_text(text):
     cleaned_lines = [line.strip() for line in lines if line.strip()]
     return " ".join(cleaned_lines)
 
-# Custom retriever with relevance scoring
-def retrieve_with_scores(query, vectorstore, k=3, score_threshold=0.7):
-    """Retrieve documents with relevance scores and filter by threshold"""
+# Custom retriever that shows scores but doesn't filter
+def retrieve_with_scores(query, vectorstore, k=3):
+    """Retrieve documents with relevance scores (no filtering)"""
     docs_and_scores = vectorstore.similarity_search_with_relevance_scores(query, k=k)
-    
-    # Filter documents by score threshold
-    filtered_docs = [doc for doc, score in docs_and_scores if score >= score_threshold]
     
     # Display retrieval info in sidebar
     st.sidebar.subheader("Retrieval Information")
-    st.sidebar.write(f"Found {len(docs_and_scores)} documents, {len(filtered_docs)} meet threshold")
+    st.sidebar.write(f"Retrieved {len(docs_and_scores)} documents:")
     for i, (doc, score) in enumerate(docs_and_scores):
         st.sidebar.write(f"Document {i+1} - Score: {score:.3f}")
         st.sidebar.text(doc.page_content[:100] + "...")
     
-    return filtered_docs
+    # Return just the documents without filtering
+    return [doc for doc, score in docs_and_scores]
 
 st.title("Context Chat Bot")
 
@@ -68,9 +66,9 @@ if uploaded_file is not None:
     # Store embeddings in vector DB
     vectorstore = FAISS.from_documents(documents, embeddings)
 
-    # Create a retriever with scoring
+    # Create a retriever with scoring (no threshold filter)
     retriever = RunnableLambda(
-        lambda query: retrieve_with_scores(query, vectorstore, k=3, score_threshold=0.7)
+        lambda query: retrieve_with_scores(query, vectorstore, k=3)
     ).bind()
     
     # Create a llm for the chat
@@ -89,8 +87,6 @@ if uploaded_file is not None:
 
     # Format documents for context
     def format_docs(docs):
-        if not docs:
-            return "No relevant information found"
         return "\n\n".join([doc.page_content for doc in docs])
     
     rag_chain = {
