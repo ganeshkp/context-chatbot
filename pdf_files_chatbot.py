@@ -16,7 +16,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-os.environ['HF_TOKEN']=os.getenv("HF_TOKEN")
+os.environ['HF_TOKEN']=st.secrets["api_keys"]["HF_TOKEN"]
 os.environ["LANGCHAIN_API_KEY"]=st.secrets["api_keys"]["LANGCHAIN_API_KEY"]
 os.environ["LANGCHAIN_TRACING_V2"]="true"
 os.environ["LANGCHAIN_PROJECT"]="Simple Q&A Chatbot With Huggingface"
