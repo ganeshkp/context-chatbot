@@ -18,7 +18,6 @@ duckdb
 pandas
 openai
 langchain-groq
-duckduckgo-search
 pymupdf
 arxiv
 wikipedia
