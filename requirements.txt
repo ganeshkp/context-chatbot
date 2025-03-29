@@ -4,5 +4,4 @@ langchain-community
 langchain_groq
 langchain_huggingface
 langchain_chroma
-chromadb
 faiss-cpu
