@@ -3,7 +3,6 @@ from langchain_core.runnables import RunnableLambda
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
-# from langchain_community.vectorstores import Chroma
 from langchain_community.vectorstores import FAISS
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
@@ -20,11 +19,6 @@ os.environ["LANGCHAIN_API_KEY"]=st.secrets["api_keys"]["LANGCHAIN_API_KEY"]
 os.environ["LANGCHAIN_TRACING_V2"]="true"
 os.environ["LANGCHAIN_PROJECT"]="Simple Q&A Chatbot With Huggingface"
 groq_api_key=st.secrets["api_keys"]["GROQ_API_KEY"]
-
-# os.environ["LANGCHAIN_API_KEY"]=os.getenv("LANGCHAIN_API_KEY")
-# os.environ["LANGCHAIN_TRACING_V2"]="true"
-# os.environ["LANGCHAIN_PROJECT"]="Simple Q&A Chatbot With Huggingface"
-# groq_api_key=os.getenv("GROQ_API_KEY")
 
 # Clean text
 def clean_text(text):
