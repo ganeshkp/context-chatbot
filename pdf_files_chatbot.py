@@ -59,7 +59,10 @@ if uploaded_files:
             retriever = vectorstore.as_retriever()
 
             contextualize_q_prompt = ChatPromptTemplate.from_messages([
-                ("system", "Given a chat history and the latest user question "
+                ("system", "Answer the questions based on the provided context only."
+                            "dont answer if questions are out of context and say i dont have answer."
+                            "But dont mention about context"
+                            "Given a chat history and the latest user question "
                            "which might reference context in the chat history, "
                            "formulate a standalone question which can be understood "
                            "without the chat history. Do NOT answer the question, "
