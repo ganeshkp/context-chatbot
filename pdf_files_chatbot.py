@@ -13,9 +13,10 @@ from langchain_community.document_loaders import PyPDFLoader
 import os
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
-os.environ['HF_TOKEN'] = st.secrets["api_keys"]["HF_TOKEN"]
+os.environ["HF_TOKEN"] = st.secrets["api_keys"]["HF_TOKEN"]
 os.environ["LANGCHAIN_API_KEY"] = st.secrets["api_keys"]["LANGCHAIN_API_KEY"]
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_PROJECT"] = "Simple Q&A Chatbot With Huggingface"
@@ -29,10 +30,12 @@ llm = ChatGroq(groq_api_key=groq_api_key, model_name="Gemma2-9b-It")
 
 session_id = st.text_input("Session ID", value="default_session")
 
-if 'store' not in st.session_state:
+if "store" not in st.session_state:
     st.session_state.store = {}
 
-uploaded_files = st.file_uploader("Choose a PDF file", type="pdf", accept_multiple_files=True)
+uploaded_files = st.file_uploader(
+    "Choose a PDF file", type="pdf", accept_multiple_files=True
+)
 
 if uploaded_files:
     documents = []
@@ -40,14 +43,14 @@ if uploaded_files:
         temppdf = "./temp.pdf"
         with open(temppdf, "wb") as file:
             file.write(uploaded_file.getvalue())
-        
+
         loader = PyPDFLoader(temppdf)
         docs = loader.load()
         documents.extend(docs)
 
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=5000, chunk_overlap=500)
     splits = text_splitter.split_documents(documents)
-    
+
     if not splits:
         st.error("No document chunks were created. Check text splitting logic.")
     else:
@@ -58,21 +61,28 @@ if uploaded_files:
             vectorstore = FAISS.from_documents(documents=splits, embedding=embeddings)
             retriever = vectorstore.as_retriever()
 
-            contextualize_q_prompt = ChatPromptTemplate.from_messages([
-                ("system", "Answer the questions based on the provided context only."
-                            "dont answer if questions are out of context and say i dont have answer."
-                            "But dont mention about context"
-                            "Given a chat history and the latest user question "
-                           "which might reference context in the chat history, "
-                           "formulate a standalone question which can be understood "
-                           "without the chat history. Do NOT answer the question, "
-                           "just reformulate it if needed and otherwise return it as is."),
-                MessagesPlaceholder("chat_history"),
-                ("human", "{input}"),
-            ])
-            
-            history_aware_retriever = create_history_aware_retriever(llm, retriever, contextualize_q_prompt)
-            
+            contextualize_q_prompt = ChatPromptTemplate.from_messages(
+                [
+                    (
+                        "system",
+                        "Answer the questions based on the provided context only."
+                        "dont answer if questions are out of context and say i dont have answer."
+                        "But dont mention about context"
+                        "Given a chat history and the latest user question "
+                        "which might reference context in the chat history, "
+                        "formulate a standalone question which can be understood "
+                        "without the chat history. Do NOT answer the question, "
+                        "just reformulate it if needed and otherwise return it as is.",
+                    ),
+                    MessagesPlaceholder("chat_history"),
+                    ("human", "{input}"),
+                ]
+            )
+
+            history_aware_retriever = create_history_aware_retriever(
+                llm, retriever, contextualize_q_prompt
+            )
+
             system_prompt = (
                 "You are an assistant for question-answering tasks. "
                 "Use the following pieces of retrieved context only to answer "
@@ -80,27 +90,32 @@ if uploaded_files:
                 "don't know. Use three sentences maximum and keep the "
                 "answer concise.\n\n{context}"
             )
-            qa_prompt = ChatPromptTemplate.from_messages([
-                ("system", system_prompt),
-                MessagesPlaceholder("chat_history"),
-                ("human", "{input}"),
-            ])
-            
+            qa_prompt = ChatPromptTemplate.from_messages(
+                [
+                    ("system", system_prompt),
+                    MessagesPlaceholder("chat_history"),
+                    ("human", "{input}"),
+                ]
+            )
+
             question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
-            rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
-            
+            rag_chain = create_retrieval_chain(
+                history_aware_retriever, question_answer_chain
+            )
+
             def get_session_history(session: str) -> BaseChatMessageHistory:
                 if session not in st.session_state.store:
                     st.session_state.store[session] = ChatMessageHistory()
                 return st.session_state.store[session]
-            
+
             conversational_rag_chain = RunnableWithMessageHistory(
-                rag_chain, get_session_history,
+                rag_chain,
+                get_session_history,
                 input_messages_key="input",
                 history_messages_key="chat_history",
-                output_messages_key="answer"
+                output_messages_key="answer",
             )
-            
+
             user_input = st.text_input("Your question:")
             if user_input:
                 session_history = get_session_history(session_id)
@@ -108,5 +123,5 @@ if uploaded_files:
                     {"input": user_input},
                     config={"configurable": {"session_id": session_id}},
                 )
-                st.write("Assistant:", response['answer'])
+                st.write("Assistant:", response["answer"])
                 st.write("Chat History:", session_history.messages)
