@@ -27,8 +27,6 @@ In this example, we're using `StreamlitCallbackHandler` to display the thoughts 
 Try more LangChain 🤝 Streamlit Agent examples at [github.com/langchain-ai/streamlit-agent](https://github.com/langchain-ai/streamlit-agent).
 """
 
-## Sidebar for settings
-st.sidebar.title("Settings")
 groq_api_key = st.secrets["api_keys"]["GROQ_API_KEY"]
 
 if "messages" not in st.session_state:
