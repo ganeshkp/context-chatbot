@@ -17,6 +17,7 @@ load_dotenv()
 os.environ["LANGCHAIN_API_KEY"] = st.secrets["api_keys"]["LANGCHAIN_API_KEY"]
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_PROJECT"] = "Q&A Chatbot With Relevance Scoring"
+os.environ["HF_TOKEN"] = st.secrets["api_keys"]["HF_TOKEN"]
 # groq_api_key = st.secrets["api_keys"]["GROQ_API_KEY"]
 
 
