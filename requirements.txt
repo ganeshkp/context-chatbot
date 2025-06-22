@@ -6,3 +6,5 @@ langchain_huggingface
 langchain_chroma
 chromadb
 faiss-cpu
+transformers
+sentence-transformers
