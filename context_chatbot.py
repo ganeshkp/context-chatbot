@@ -2,9 +2,8 @@ import streamlit as st
 from langchain_core.runnables import RunnableLambda
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
-from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 
@@ -13,12 +12,31 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+def get_config_value(key, section="api_keys"):
+    """Read config from Streamlit secrets first, then environment variables."""
+    try:
+        value = st.secrets.get(section, {}).get(key)
+    except Exception:
+        value = None
+
+    return value or os.getenv(key)
+
+
+def set_env_from_config(key):
+    value = get_config_value(key)
+    if value:
+        os.environ[key] = value
+    return value
+
+
 ## Langsmith Tracking
-os.environ["LANGCHAIN_API_KEY"] = st.secrets["api_keys"]["LANGCHAIN_API_KEY"]
-os.environ["LANGCHAIN_TRACING_V2"] = "true"
+langchain_api_key = set_env_from_config("LANGCHAIN_API_KEY")
+os.environ["LANGCHAIN_TRACING_V2"] = "true" if langchain_api_key else "false"
 os.environ["LANGCHAIN_PROJECT"] = "Q&A Chatbot With Relevance Scoring"
-os.environ["HF_TOKEN"] = st.secrets["api_keys"]["HF_TOKEN"]
-# groq_api_key = st.secrets["api_keys"]["GROQ_API_KEY"]
+openai_api_key = set_env_from_config("OPENAI_API_KEY")
+openai_chat_model = get_config_value("OPENAI_CHAT_MODEL") or "gpt-5.6-luna"
+openai_embedding_model = get_config_value("OPENAI_EMBEDDING_MODEL") or "text-embedding-3-small"
 
 
 # Clean text
@@ -46,15 +64,12 @@ def retrieve_with_scores(query, vectorstore, k=3):
 
 st.title("Context Chat Bot")
 
-## Get the Groq API Key and url(YT or website)to be summarized
-with st.sidebar:
-    st.markdown("**Enter your Groq API Key**")
-    st.markdown(
-        "*Get your API key from the [Groq Console](https://console.groq.com/keys)*"
+if not openai_api_key:
+    st.error(
+        "Missing OPENAI_API_KEY. Add it to Streamlit secrets under api_keys "
+        "or set it as an environment variable."
     )
-    groq_api_key = st.text_input(
-        "Groq API Key", value="", type="password", label_visibility="collapsed"
-    )
+    st.stop()
 
 uploaded_file = st.file_uploader(
     "Choose a text file", type="txt", accept_multiple_files=False
@@ -78,7 +93,7 @@ if uploaded_file is not None:
     documents = text_splitter.split_documents(docs)
 
     # Embedding the documents
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    embeddings = OpenAIEmbeddings(model=openai_embedding_model)
 
     # Store embeddings in vector DB
     vectorstore = FAISS.from_documents(documents, embeddings)
@@ -89,7 +104,7 @@ if uploaded_file is not None:
     ).bind()
 
     # Create a llm for the chat
-    llm = ChatGroq(groq_api_key=groq_api_key, model="Llama3-8b-8192")
+    llm = ChatOpenAI(model=openai_chat_model)
 
     message = """
     Answer the questions based only on the provided context.

@@ -1,10 +1,7 @@
 python-dotenv
 langchain
 langchain-community
-langchain_groq
-langchain_huggingface
+langchain-openai
 langchain_chroma
 chromadb
 faiss-cpu
-transformers
-sentence-transformers

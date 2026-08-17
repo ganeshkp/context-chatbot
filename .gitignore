@@ -1,2 +1,4 @@
 *.env
 *.streamlit/**
+*.vscode/**
+*.ipynb_checkpoints
