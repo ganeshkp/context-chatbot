@@ -1,42 +1,10 @@
-### Quick Wins (< 30 min)
+Subject: URGENT: Production Server Outage - Immediate Action Required
 
-1. **NOT_HTTPS**
-   - **Problem**: The site is not served over HTTPS.
-   - **Affected Component**: Server configuration.
-   - **Fix**: Obtain an SSL certificate and configure the server to redirect all HTTP traffic to HTTPS. Update server settings to enforce HTTPS connections.
+Dear John Doe,
 
-2. **MISSING_CACHE_CONTROL**
-   - **Problem**: Missing Cache-Control header.
-   - **Affected Component**: Server configuration.
-   - **Fix**: Add a `Cache-Control` header to server responses. Example: `Cache-Control: max-age=3600, must-revalidate`.
+We're experiencing a critical production outage with our primary database server, which has been down since 10:15 AM. This is severely impacting all customer-facing services.
 
-3. **MISSING_CSP**
-   - **Problem**: Missing Content-Security-Policy header.
-   - **Affected Component**: Server configuration.
-   - **Fix**: Implement a `Content-Security-Policy` header to mitigate XSS risks. Example: `Content-Security-Policy: default-src 'self';`.
+Please join the emergency bridge call immediately at +1-555-123-4567 (conference ID 7890). Bring your database recovery checklist and be prepared to discuss rollback options.
 
-### Medium (1-4 hours)
-
-4. **AI_TITLE_REWRITE**
-   - **Problem**: Missing `<title>` tag.
-   - **Affected Component**: HTML `<head>` section.
-   - **Fix**: Add a `<title>` tag with the suggested content: `<title>Welcome to Silival - Your Go-To Resource</title>`.
-
-5. **AI_META_REWRITE**
-   - **Problem**: Missing meta description.
-   - **Affected Component**: HTML `<head>` section.
-   - **Fix**: Add a `<meta name="description">` tag with the suggested content: `<meta name="description" content="Explore Silival for insightful resources and information. Discover our curated content designed to optimize your digital presence today.">`.
-
-6. **AI_H1_REWRITE**
-   - **Problem**: Missing `<h1>` tag.
-   - **Affected Component**: HTML body.
-   - **Fix**: Add an `<h1>` tag with the suggested content: `<h1>Welcome to Silival - Discover and Optimize</h1>`.
-
-### Requires Planning
-
-- **AI_PAGE_DIAGNOSIS**
-  - **Problem**: Overall lack of SEO elements such as title, meta description, and H1.
-  - **Affected Component**: Entire HTML structure.
-  - **Fix**: Conduct a comprehensive SEO audit and implement a structured plan to enhance on-page SEO elements, including keyword research and content optimization strategies.
-
-Ensure all changes are tested in a staging environment before deploying to production.
+Regards,
+[Your System]
